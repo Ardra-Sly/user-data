@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fetch Users</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: lavender;
+    }
+    h1 {
+      text-align: center;
+    }
+    .user {
+      background: rgb(151, 182, 195);
+      margin: 1rem auto;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      width: 80%;
+    }
+    .error {
+      color: red;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    #reloadBtn {
+      display: block;
+      margin: 1rem auto;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    #reloadBtn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>User Information</h1>
+  <button id="reloadBtn">Reload Users</button>
+  <div id="userContainer"></div>
+  <div id="errorMessage" class="error"></div>
+
+  <script>
+    const userContainer = document.getElementById('userContainer');
+    const errorMessage = document.getElementById('errorMessage');
+    const reloadBtn = document.getElementById('reloadBtn');
+
+    function fetchUsers() {
+      userContainer.innerHTML = '';
+      errorMessage.textContent = '';
+
+      fetch('https://jsonplaceholder.typicode.com/users')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(users => {
+          users.forEach(user => {
+            const userDiv = document.createElement('div');
+            userDiv.className = 'user';
+            userDiv.innerHTML = `
+              <h3>${user.name}</h3>
+              <p><strong>Email:</strong> ${user.email}</p>
+              <p><strong>Address:</strong> ${user.address.street}, ${user.address.city}</p>
+            `;
+            userContainer.appendChild(userDiv);
+          });
+        })
+        .catch(error => {
+          errorMessage.textContent = "Failed to load user data. Please try again.";
+          console.error(error);
+        });
+    }
+
+    // Initial fetch
+    fetchUsers();
+
+    // Reload button click
+    reloadBtn.addEventListener('click', fetchUsers);
+  </script>
+
+</body>
+</html>
